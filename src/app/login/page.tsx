@@ -40,7 +40,7 @@ export default function Login() {
             placeholder="Username"
             value={username}
             onChange={(e) => setUsername(e.target.value)}
-            className="w-full px-3 py-2 border rounded"
+            className="w-full px-3 py-2 text-gray-900 border rounded"
           />
         </div>
         <div className="mb-4">
@@ -51,7 +51,7 @@ export default function Login() {
               placeholder="Password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="w-full px-3 py-2 border rounded"
+              className="w-full px-3 py-2 text-gray-900 border rounded"
             />
             <button
               type="button"
