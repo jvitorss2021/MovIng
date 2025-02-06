@@ -1,5 +1,4 @@
-// filepath: /home/joaovitor/projetos/treino-app/backend/src/index.ts
-import express, { Request, Response } from "express";
+import express, { Request, Response, NextFunction } from "express";
 import cors from "cors";
 import dotenv from "dotenv";
 import { PrismaClient } from "@prisma/client";
@@ -8,12 +7,41 @@ import jwt from "jsonwebtoken";
 
 dotenv.config();
 
+declare module "express" {
+  export interface Request {
+    user?: {
+      userId: number;
+    };
+  }
+}
+
 const app = express();
 const port = process.env.PORT || 5000;
 const prisma = new PrismaClient();
 
 app.use(cors());
 app.use(express.json());
+
+const authenticateToken = (
+  req: Request,
+  res: Response,
+  next: NextFunction
+): void => {
+  const token = req.headers["authorization"]?.split(" ")[1];
+  if (!token) {
+    res.sendStatus(401);
+    return;
+  }
+
+  jwt.verify(token, process.env.JWT_SECRET!, (err: any, user: any) => {
+    if (err) {
+      res.sendStatus(403);
+      return;
+    }
+    req.user = { userId: user.userId };
+    next();
+  });
+};
 
 app.post("/register", async (req: Request, res: Response) => {
   const { username, name, password } = req.body;
@@ -37,53 +65,38 @@ app.post("/login", async (req: Request, res: Response) => {
   res.json({ token });
 });
 
-app.get("/workouts", async (req: Request, res: Response) => {
-  const workouts = await prisma.workout.findMany();
+app.get("/workouts", authenticateToken, async (req: Request, res: Response) => {
+  const workouts = await prisma.workout.findMany({
+    where: { userId: req.user!.userId },
+  });
   res.json(workouts);
 });
 
-app.post("/workouts", async (req: Request, res: Response) => {
-  const { name, exercises, userId } = req.body;
-  const workout = await prisma.workout.create({
-    data: { name, exercises, userId },
-  });
-  res.json(workout);
-});
+app.post(
+  "/workouts",
+  authenticateToken,
+  async (req: Request, res: Response) => {
+    const { name, exercises } = req.body;
+    const workout = await prisma.workout.create({
+      data: { name, exercises, userId: req.user!.userId },
+    });
+    res.json(workout);
+  }
+);
 
-app.post("/populate-workouts", async (req: Request, res: Response) => {
-  const { userId } = req.body;
-  const workouts = [
-    {
-      name: "Treino A",
-      exercises: JSON.stringify(["Exercício 1", "Exercício 2"]),
-      userId,
-    },
-    {
-      name: "Treino B",
-      exercises: JSON.stringify(["Exercício 3", "Exercício 4"]),
-      userId,
-    },
-    {
-      name: "Treino C",
-      exercises: JSON.stringify(["Exercício 5", "Exercício 6"]),
-      userId,
-    },
-  ];
-  const createdWorkouts = await prisma.workout.createMany({
-    data: workouts,
-  });
-  res.json(createdWorkouts);
-});
-
-app.put("/workouts/:id", async (req: Request, res: Response) => {
-  const { id } = req.params;
-  const { name, exercises } = req.body;
-  const updatedWorkout = await prisma.workout.update({
-    where: { id: Number(id) },
-    data: { name, exercises },
-  });
-  res.json(updatedWorkout);
-});
+app.put(
+  "/workouts/:id",
+  authenticateToken,
+  async (req: Request, res: Response) => {
+    const { id } = req.params;
+    const { name, exercises } = req.body;
+    const updatedWorkout = await prisma.workout.update({
+      where: { id: Number(id), userId: req.user!.userId },
+      data: { name, exercises },
+    });
+    res.json(updatedWorkout);
+  }
+);
 
 app.listen(port, () => {
   console.log(`Server is running on port ${port}`);

@@ -23,7 +23,7 @@ export default function Dashboard() {
         const response = await axios.get("http://localhost:5000/workouts", {
           headers: { Authorization: `Bearer ${token}` },
         });
-        console.log(response.data); // Adicione este console log
+        console.log(response.data);
         setWorkouts(response.data);
       } catch (error) {
         console.error("Failed to fetch workouts", error);
@@ -39,9 +39,8 @@ export default function Dashboard() {
       const response = await axios.post(
         "http://localhost:5000/workouts",
         {
-          name: `Treino ${String.fromCharCode(65 + workouts.length)}`, // Nome do treino baseado no número de treinos existentes
-          exercises: JSON.stringify([]), // Inicialmente vazio
-          userId: 1, // Substitua pelo ID do usuário correto
+          name: `Treino ${String.fromCharCode(65 + workouts.length)}`,
+          exercises: JSON.stringify([]),
         },
         {
           headers: { Authorization: `Bearer ${token}` },

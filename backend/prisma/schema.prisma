@@ -18,7 +18,7 @@ model User {
 model Workout {
   id          Int      @id @default(autoincrement())
   name        String
-  exercises   String  
+  exercises   String
   userId      Int
   user        User     @relation(fields: [userId], references: [id])
   createdAt   DateTime @default(now())
