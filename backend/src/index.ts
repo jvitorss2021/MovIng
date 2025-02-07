@@ -1,3 +1,4 @@
+// filepath: /home/joaovitor/projetos/treino-app/backend/src/index.ts
 import express, { Request, Response, NextFunction } from "express";
 import cors from "cors";
 import dotenv from "dotenv";
@@ -38,7 +39,7 @@ const authenticateToken = (
       res.sendStatus(403);
       return;
     }
-    req.user = { userId: user.userId };
+    req.user = user;
     next();
   });
 };
@@ -95,6 +96,18 @@ app.put(
       data: { name, exercises },
     });
     res.json(updatedWorkout);
+  }
+);
+
+app.delete(
+  "/workouts/:id",
+  authenticateToken,
+  async (req: Request, res: Response) => {
+    const { id } = req.params;
+    await prisma.workout.delete({
+      where: { id: Number(id), userId: req.user!.userId },
+    });
+    res.sendStatus(204);
   }
 );
 

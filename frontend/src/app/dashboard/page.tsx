@@ -23,7 +23,6 @@ export default function Dashboard() {
         const response = await axios.get("http://localhost:5000/workouts", {
           headers: { Authorization: `Bearer ${token}` },
         });
-        console.log(response.data);
         setWorkouts(response.data);
       } catch (error) {
         console.error("Failed to fetch workouts", error);
@@ -56,6 +55,18 @@ export default function Dashboard() {
     router.push(`/edit-workout/${id}`);
   };
 
+  const handleDelete = async (id: number) => {
+    const token = localStorage.getItem("token");
+    try {
+      await axios.delete(`http://localhost:5000/workouts/${id}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      setWorkouts(workouts.filter((workout) => workout.id !== id));
+    } catch (error) {
+      console.error("Failed to delete workout", error);
+    }
+  };
+
   const handleLogout = () => {
     localStorage.removeItem("token");
     router.push("/login");
@@ -67,7 +78,7 @@ export default function Dashboard() {
         <h1 className="text-3xl text-gray-900">Dashboard</h1>
         <button
           onClick={handleLogout}
-          className="bg-red-500 text-white py-2 px-4 rounded hover:bg-red-600"
+          className="bg-slate-800 text-white py-2 px-4 rounded hover:bg-red-600"
         >
           Logout
         </button>
@@ -75,23 +86,25 @@ export default function Dashboard() {
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
         {workouts.map((workout) => (
           <div key={workout.id} className="p-4 bg-white rounded shadow">
-            <h2 className="text-xl font-bold">{workout.name}</h2>
-            <p>{workout.exercises}</p>
-            <p className="text-gray-500 text-sm">
-              Created at: {new Date(workout.createdAt).toLocaleDateString()}
-            </p>
-            <button
+            <h2
+              className="text-xl font-bold cursor-pointer text-blue-500 hover:underline"
               onClick={() => handleEdit(workout.id)}
-              className="mt-4 bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600"
             >
-              Edit
+              {workout.name}
+            </h2>
+            <p>{workout.exercises}</p>
+            <button
+              onClick={() => handleDelete(workout.id)}
+              className="mt-4 bg-slate-900 text-white py-2 px-4 rounded hover:bg-red-950"
+            >
+              Delete
             </button>
           </div>
         ))}
         <div className="p-4 bg-white rounded shadow flex items-center justify-center">
           <button
             onClick={handleAddWorkout}
-            className="bg-green-500 text-white py-2 px-4 rounded hover:bg-green-600"
+            className="bg-green-800 text-white py-2 px-4 rounded hover:bg-green-600"
           >
             Add Workout
           </button>
