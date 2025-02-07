@@ -1,12 +1,9 @@
-// filepath: /home/joaovitor/projetos/treino-app/backend/src/index.ts
 import express, { Request, Response, NextFunction } from "express";
 import cors from "cors";
 import dotenv from "dotenv";
 import { PrismaClient } from "@prisma/client";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
-
-dotenv.config();
 
 declare module "express" {
   export interface Request {
@@ -15,6 +12,8 @@ declare module "express" {
     };
   }
 }
+
+dotenv.config();
 
 const app = express();
 const port = process.env.PORT || 5000;
@@ -73,6 +72,22 @@ app.get("/workouts", authenticateToken, async (req: Request, res: Response) => {
   res.json(workouts);
 });
 
+app.get(
+  "/workouts/:id",
+  authenticateToken,
+  async (req: Request, res: Response) => {
+    const { id } = req.params;
+    const workout = await prisma.workout.findUnique({
+      where: { id: Number(id), userId: req.user!.userId },
+    });
+    if (!workout) {
+      res.status(404).json({ error: "Workout not found" });
+      return;
+    }
+    res.json(workout);
+  }
+);
+
 app.post(
   "/workouts",
   authenticateToken,
@@ -108,6 +123,29 @@ app.delete(
       where: { id: Number(id), userId: req.user!.userId },
     });
     res.sendStatus(204);
+  }
+);
+
+app.post(
+  "/workouts/:id/exercises",
+  authenticateToken,
+  async (req: Request, res: Response) => {
+    const { id } = req.params;
+    const { exercise } = req.body;
+    const workout = await prisma.workout.findUnique({
+      where: { id: Number(id), userId: req.user!.userId },
+    });
+    if (!workout) {
+      res.status(404).json({ error: "Workout not found" });
+      return;
+    }
+    const exercises = JSON.parse(workout.exercises);
+    exercises.push(exercise);
+    const updatedWorkout = await prisma.workout.update({
+      where: { id: Number(id) },
+      data: { exercises: JSON.stringify(exercises) },
+    });
+    res.json(updatedWorkout);
   }
 );
 
