@@ -74,6 +74,11 @@ export default function EditWorkout() {
     }
   };
 
+  const handleDeleteExercise = (index: number) => {
+    const updatedExercises = exercises.filter((_, i) => i !== index);
+    setExercises(updatedExercises);
+  };
+
   const handleBack = () => {
     router.push("/dashboard");
   };
@@ -97,7 +102,18 @@ export default function EditWorkout() {
           <label className="block text-primary text-sm">Exercises</label>
           <ul className="text-sm">
             {exercises.map((exercise, index) => (
-              <li key={index}>{exercise}</li>
+              <li
+                key={index}
+                className="flex justify-between items-center mb-2 p-2 bg-base-100 rounded"
+              >
+                {exercise}
+                <button
+                  onClick={() => handleDeleteExercise(index)}
+                  className="btn btn-error btn-xs"
+                >
+                  Delete
+                </button>
+              </li>
             ))}
           </ul>
           <input
