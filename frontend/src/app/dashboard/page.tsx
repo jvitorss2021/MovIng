@@ -73,41 +73,40 @@ export default function Dashboard() {
   };
 
   return (
-    <div className="p-6 bg-gray-100 min-h-screen">
+    <div className="p-6 bg-base-200 min-h-screen">
       <div className="flex justify-between items-center mb-6">
-        <h1 className="text-3xl text-gray-900">Dashboard</h1>
-        <button
-          onClick={handleLogout}
-          className="bg-slate-800 text-white py-2 px-4 rounded hover:bg-red-600"
-        >
+        <h1 className="text-3xl text-primary">MovIng</h1>
+        <button onClick={handleLogout} className="btn btn-error">
           Logout
         </button>
       </div>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
         {workouts.map((workout) => (
-          <div key={workout.id} className="p-4 bg-white rounded shadow">
-            <h2
-              className="text-xl font-bold cursor-pointer text-blue-500 hover:underline"
-              onClick={() => handleEdit(workout.id)}
-            >
-              {workout.name}
-            </h2>
-            <p>{workout.exercises}</p>
-            <button
-              onClick={() => handleDelete(workout.id)}
-              className="mt-4 bg-slate-900 text-white py-2 px-4 rounded hover:bg-red-950"
-            >
-              Delete
-            </button>
+          <div key={workout.id} className="card-compact bg-base-100 shadow-xl">
+            <div className="card-body">
+              <h2
+                className="card-title text-xl font-bold cursor-pointer text-primary hover:underline"
+                onClick={() => handleEdit(workout.id)}
+              >
+                {workout.name}
+              </h2>
+              <div className="card-actions justify-end">
+                <button
+                  onClick={() => handleDelete(workout.id)}
+                  className="btn-sm bg-red-950"
+                >
+                  Delete
+                </button>
+              </div>
+            </div>
           </div>
         ))}
-        <div className="p-4 bg-white rounded shadow flex items-center justify-center">
-          <button
-            onClick={handleAddWorkout}
-            className="bg-green-800 text-white py-2 px-4 rounded hover:bg-green-600"
-          >
-            Add Workout
-          </button>
+        <div className="card bg-base-100 shadow-xl flex items-center justify-center">
+          <div className="card-body">
+            <button onClick={handleAddWorkout} className="btn btn-success">
+              Add Workout
+            </button>
+          </div>
         </div>
       </div>
     </div>

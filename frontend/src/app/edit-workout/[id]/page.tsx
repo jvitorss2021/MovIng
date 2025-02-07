@@ -74,24 +74,28 @@ export default function EditWorkout() {
     }
   };
 
+  const handleBack = () => {
+    router.push("/dashboard");
+  };
+
   if (!workout) return <div>Loading...</div>;
 
   return (
-    <div className="p-6 bg-gray-100 min-h-screen">
-      <h1 className="text-3xl mb-6 text-gray-900">Edit Workout</h1>
-      <div className="bg-white p-6 rounded shadow-md w-full max-w-sm">
+    <div className="p-6 bg-base-200 min-h-screen">
+      <h1 className="text-3xl mb-6 text-primary">Edit Workout</h1>
+      <div className="bg-base-100 p-6 rounded shadow-md w-full max-w-sm">
         <div className="mb-4">
-          <label className="block text-gray-700">Name</label>
+          <label className="block text-primary text-sm">Name</label>
           <input
             type="text"
             value={name}
             onChange={(e) => setName(e.target.value)}
-            className="w-full px-3 py-2 border rounded text-gray-900"
+            className="input input-bordered w-full text-sm"
           />
         </div>
         <div className="mb-4">
-          <label className="block text-gray-700">Exercises</label>
-          <ul>
+          <label className="block text-primary text-sm">Exercises</label>
+          <ul className="text-sm">
             {exercises.map((exercise, index) => (
               <li key={index}>{exercise}</li>
             ))}
@@ -100,22 +104,24 @@ export default function EditWorkout() {
             type="text"
             value={newExercise}
             onChange={(e) => setNewExercise(e.target.value)}
-            className="w-full px-3 py-2 border rounded text-gray-900 mt-2"
+            className="input input-bordered w-full text-sm mt-2"
             placeholder="Add new exercise"
           />
           <button
             onClick={handleAddExercise}
-            className="mt-2 bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600"
+            className="btn btn-primary mt-2 text-sm"
           >
-            Add Exercise
+            Add
           </button>
         </div>
-        <button
-          onClick={handleSave}
-          className="w-full bg-green-500 text-white py-2 rounded hover:bg-green-600"
-        >
-          Save
-        </button>
+        <div className="flex justify-between">
+          <button onClick={handleBack} className="btn btn-secondary text-sm">
+            Back
+          </button>
+          <button onClick={handleSave} className="btn btn-success text-sm">
+            Save
+          </button>
+        </div>
       </div>
     </div>
   );
