@@ -21,14 +21,11 @@ const prisma = new PrismaClient();
 
 const corsOptions = {
   origin: process.env.FRONTEND_URL || "http://localhost:3000",
-  methods: "GET, POST, PUT, DELETE, OPTIONS",
-  allowedHeaders: "Content-Type, Authorization",
   credentials: true,
+  optionsSuccessStatus: 200,
 };
 
 app.use(cors(corsOptions));
-app.options("*", cors(corsOptions));
-
 app.use(express.json());
 
 const authenticateToken = (
