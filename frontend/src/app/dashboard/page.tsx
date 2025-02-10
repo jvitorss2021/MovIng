@@ -76,7 +76,7 @@ export default function Dashboard() {
     <div className="p-6 bg-base-200 min-h-screen">
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-3xl text-primary">MovIng</h1>
-        <button onClick={handleLogout} className="btn btn-error">
+        <button onClick={handleLogout} className="btn bg-red-800">
           Logout
         </button>
       </div>
@@ -93,7 +93,7 @@ export default function Dashboard() {
               <div className="card-actions justify-end">
                 <button
                   onClick={() => handleDelete(workout.id)}
-                  className="btn-sm bg-red-950"
+                  className="btn bg-red-800"
                 >
                   Delete
                 </button>
@@ -103,7 +103,7 @@ export default function Dashboard() {
         ))}
         <div className="card bg-base-100 shadow-xl flex items-center justify-center">
           <div className="card-body">
-            <button onClick={handleAddWorkout} className="btn btn-success">
+            <button onClick={handleAddWorkout} className="btn bg-teal-700 ">
               Add Workout
             </button>
           </div>
