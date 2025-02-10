@@ -15,12 +15,13 @@ type Workout = {
 export default function Dashboard() {
   const [workouts, setWorkouts] = useState<Workout[]>([]);
   const router = useRouter();
+  const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
 
   useEffect(() => {
     const fetchWorkouts = async () => {
       const token = localStorage.getItem("token");
       try {
-        const response = await axios.get("http://localhost:5000/workouts", {
+        const response = await axios.get(`${apiUrl}/workouts`, {
           headers: { Authorization: `Bearer ${token}` },
         });
         setWorkouts(response.data);
@@ -30,13 +31,13 @@ export default function Dashboard() {
     };
 
     fetchWorkouts();
-  }, []);
+  }, [apiUrl]);
 
   const handleAddWorkout = async () => {
     const token = localStorage.getItem("token");
     try {
       const response = await axios.post(
-        "http://localhost:5000/workouts",
+        `${apiUrl}/workouts`,
         {
           name: `Treino ${String.fromCharCode(65 + workouts.length)}`,
           exercises: JSON.stringify([]),
@@ -58,7 +59,7 @@ export default function Dashboard() {
   const handleDelete = async (id: number) => {
     const token = localStorage.getItem("token");
     try {
-      await axios.delete(`http://localhost:5000/workouts/${id}`, {
+      await axios.delete(`${apiUrl}/workouts/${id}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       setWorkouts(workouts.filter((workout) => workout.id !== id));

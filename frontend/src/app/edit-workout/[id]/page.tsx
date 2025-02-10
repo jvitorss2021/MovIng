@@ -19,17 +19,15 @@ export default function EditWorkout() {
   const [newExercise, setNewExercise] = useState("");
   const router = useRouter();
   const { id } = useParams();
+  const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
 
   useEffect(() => {
     const fetchWorkout = async () => {
       const token = localStorage.getItem("token");
       try {
-        const response = await axios.get(
-          `http://localhost:5000/workouts/${id}`,
-          {
-            headers: { Authorization: `Bearer ${token}` },
-          }
-        );
+        const response = await axios.get(`${apiUrl}/workouts/${id}`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
         setWorkout(response.data);
         setName(response.data.name);
         setExercises(JSON.parse(response.data.exercises));
@@ -39,13 +37,13 @@ export default function EditWorkout() {
     };
 
     fetchWorkout();
-  }, [id]);
+  }, [id, apiUrl]);
 
   const handleSave = async () => {
     const token = localStorage.getItem("token");
     try {
       await axios.put(
-        `http://localhost:5000/workouts/${id}`,
+        `${apiUrl}/workouts/${id}`,
         { name, exercises: JSON.stringify(exercises) },
         {
           headers: { Authorization: `Bearer ${token}` },
@@ -61,7 +59,7 @@ export default function EditWorkout() {
     const token = localStorage.getItem("token");
     try {
       const response = await axios.post(
-        `http://localhost:5000/workouts/${id}/exercises`,
+        `${apiUrl}/workouts/${id}/exercises`,
         { exercise: newExercise },
         {
           headers: { Authorization: `Bearer ${token}` },
