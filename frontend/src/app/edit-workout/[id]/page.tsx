@@ -17,6 +17,7 @@ export default function EditWorkout() {
   const [name, setName] = useState("");
   const [exercises, setExercises] = useState<string[]>([]);
   const [newExercise, setNewExercise] = useState("");
+  const [error, setError] = useState<string | null>(null);
   const router = useRouter();
   const { id } = useParams();
 
@@ -32,6 +33,7 @@ export default function EditWorkout() {
         setExercises(JSON.parse(response.data.exercises));
       } catch (error) {
         console.error("Failed to fetch workout", error);
+        setError("Failed to fetch workout");
       }
     };
 
@@ -51,6 +53,7 @@ export default function EditWorkout() {
       router.push("/dashboard");
     } catch (error) {
       console.error("Failed to save workout", error);
+      setError("Failed to save workout");
     }
   };
 
@@ -58,7 +61,7 @@ export default function EditWorkout() {
     const token = localStorage.getItem("token");
     try {
       const response = await api.post(
-        `/${id}/exercises`,
+        `/workouts/${id}/exercises`,
         { exercise: newExercise },
         {
           headers: { Authorization: `Bearer ${token}` },
@@ -68,6 +71,7 @@ export default function EditWorkout() {
       setNewExercise("");
     } catch (error) {
       console.error("Failed to add exercise", error);
+      setError("Failed to add exercise");
     }
   };
 
@@ -86,6 +90,7 @@ export default function EditWorkout() {
     <div className="p-6 bg-base-200 min-h-screen">
       <h1 className="text-3xl mb-6 text-primary">Edit Workout</h1>
       <div className="bg-base-100 p-6 rounded shadow-md w-full max-w-sm">
+        {error && <div className="alert alert-error mb-4">{error}</div>}
         <div className="mb-4">
           <label className="block text-primary text-sm">Name</label>
           <input
