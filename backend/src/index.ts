@@ -19,11 +19,6 @@ const app = express();
 const port = process.env.PORT || 10000;
 const prisma = new PrismaClient();
 
-<<<<<<< HEAD
-const corsOptions = {
-  origin: process.env.FRONTEND_URL || "http://localhost:3000",
-  credentials: true,
-=======
 const allowedOrigins = [
   "http://localhost:3000", // Para desenvolvimento local
   "https://mov-ing-3s8b.vercel.app", // Para o frontend em produção
@@ -41,7 +36,6 @@ const corsOptions = {
     }
   },
   credentials: true, // Permite cookies se necessário
->>>>>>> testes
   optionsSuccessStatus: 200,
 };
 
