@@ -3,13 +3,14 @@
 import { useState } from "react";
 import { api } from "../../lib/axios";
 import { useRouter } from "next/navigation";
+import { AxiosError } from "axios";
 
 export default function Register() {
   const [username, setUsername] = useState("");
   const [name, setName] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [error, setError] = useState("");
+  const [error, setError] = useState<string | null>(null);
   const router = useRouter();
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -25,9 +26,13 @@ export default function Register() {
         password,
       });
       router.push("/login");
-    } catch (error) {
-      console.error("Registration failed", error);
-      setError("Registration failed");
+    } catch (err: unknown) {
+      console.error("Registration failed", err);
+      if (err instanceof AxiosError && err.response?.data?.error) {
+        setError(err.response.data.error);
+      } else {
+        setError("Registration failed");
+      }
     }
   };
 
@@ -38,7 +43,7 @@ export default function Register() {
         className="bg-base-100 p-6 rounded shadow-md w-full max-w-sm"
       >
         <h2 className="text-2xl text-primary mb-4 text-center">Register</h2>
-        {error && <p className="text-error mb-4">{error}</p>}
+        {error && <div className="alert alert-error mb-4">{error}</div>}
         <div className="mb-4">
           <label className="block text-primary">Username</label>
           <input

@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { api } from "../../lib/axios";
 import { useRouter } from "next/navigation";
+import { AxiosError } from "axios";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
 
@@ -10,6 +11,7 @@ export default function Login() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const router = useRouter();
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -21,8 +23,13 @@ export default function Login() {
       });
       localStorage.setItem("token", response.data.token);
       router.push("/dashboard");
-    } catch (error) {
-      console.error("Login failed", error);
+    } catch (err: unknown) {
+      console.error("Login failed", err);
+      if (err instanceof AxiosError && err.response?.data?.error) {
+        setError(err.response.data.error);
+      } else {
+        setError("Login failed");
+      }
     }
   };
 
@@ -33,6 +40,7 @@ export default function Login() {
         className="bg-base-100 p-6 rounded shadow-md w-full max-w-sm"
       >
         <h2 className="text-2xl text-primary mb-4 text-center">Login</h2>
+        {error && <div className="alert alert-error mb-4">{error}</div>}
         <div className="mb-4">
           <label className="block text-primary">Username</label>
           <input
