@@ -19,7 +19,10 @@ const app = express();
 const port = process.env.PORT || 5000;
 const prisma = new PrismaClient();
 
-const allowedOrigins = ["http://localhost:3000"];
+const allowedOrigins = [
+  "http://localhost:3000",
+  "https://mov-ing-3s8b.vercel.app",
+];
 
 const corsOptions = {
   origin: (
