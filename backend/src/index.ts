@@ -16,10 +16,30 @@ declare module "express" {
 dotenv.config();
 
 const app = express();
-const port = process.env.PORT || 5000;
+const port = process.env.PORT || 10000;
 const prisma = new PrismaClient();
 
-app.use(cors());
+const allowedOrigins = [
+  "http://localhost:3000", // Para desenvolvimento local
+  "https://mov-ing-3s8b.vercel.app", // Para o frontend em produção
+];
+
+const corsOptions = {
+  origin: (
+    origin: string | undefined,
+    callback: (err: Error | null, allow?: boolean) => void
+  ) => {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error("Not allowed by CORS"));
+    }
+  },
+  credentials: true, // Permite cookies se necessário
+  optionsSuccessStatus: 200,
+};
+
+app.use(cors(corsOptions));
 app.use(express.json());
 
 const authenticateToken = (
