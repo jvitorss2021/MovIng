@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import axios from "axios";
+import { api } from "../../lib/axios";
 import { useRouter } from "next/navigation";
 
 type Workout = {
@@ -21,7 +21,11 @@ export default function Dashboard() {
     const fetchWorkouts = async () => {
       const token = localStorage.getItem("token");
       try {
+<<<<<<< HEAD
         const response = await axios.get(`${apiUrl}/workouts`, {
+=======
+        const response = await api.get("/workouts", {
+>>>>>>> testes
           headers: { Authorization: `Bearer ${token}` },
         });
         setWorkouts(response.data);
@@ -36,8 +40,13 @@ export default function Dashboard() {
   const handleAddWorkout = async () => {
     const token = localStorage.getItem("token");
     try {
+<<<<<<< HEAD
       const response = await axios.post(
         `${apiUrl}/workouts`,
+=======
+      const response = await api.post(
+        "/workouts",
+>>>>>>> testes
         {
           name: `Treino ${String.fromCharCode(65 + workouts.length)}`,
           exercises: JSON.stringify([]),
@@ -59,7 +68,11 @@ export default function Dashboard() {
   const handleDelete = async (id: number) => {
     const token = localStorage.getItem("token");
     try {
+<<<<<<< HEAD
       await axios.delete(`${apiUrl}/workouts/${id}`, {
+=======
+      await api.delete(`/workouts/${id}`, {
+>>>>>>> testes
         headers: { Authorization: `Bearer ${token}` },
       });
       setWorkouts(workouts.filter((workout) => workout.id !== id));

@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import axios from "axios";
+import { api } from "../../../lib/axios";
 import { useRouter, useParams } from "next/navigation";
 
 type Workout = {
@@ -25,7 +25,11 @@ export default function EditWorkout() {
     const fetchWorkout = async () => {
       const token = localStorage.getItem("token");
       try {
+<<<<<<< HEAD
         const response = await axios.get(`${apiUrl}/workouts/${id}`, {
+=======
+        const response = await api.get(`/workouts/${id}`, {
+>>>>>>> testes
           headers: { Authorization: `Bearer ${token}` },
         });
         setWorkout(response.data);
@@ -42,8 +46,13 @@ export default function EditWorkout() {
   const handleSave = async () => {
     const token = localStorage.getItem("token");
     try {
+<<<<<<< HEAD
       await axios.put(
         `${apiUrl}/workouts/${id}`,
+=======
+      await api.put(
+        `/workouts/${id}`,
+>>>>>>> testes
         { name, exercises: JSON.stringify(exercises) },
         {
           headers: { Authorization: `Bearer ${token}` },
@@ -58,8 +67,13 @@ export default function EditWorkout() {
   const handleAddExercise = async () => {
     const token = localStorage.getItem("token");
     try {
+<<<<<<< HEAD
       const response = await axios.post(
         `${apiUrl}/workouts/${id}/exercises`,
+=======
+      const response = await api.post(
+        `/${id}/exercises`,
+>>>>>>> testes
         { exercise: newExercise },
         {
           headers: { Authorization: `Bearer ${token}` },

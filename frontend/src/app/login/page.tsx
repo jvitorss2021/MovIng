@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import axios from "axios";
+import { api } from "../../lib/axios";
 import { useRouter } from "next/navigation";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
@@ -16,7 +16,11 @@ export default function Login() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
+<<<<<<< HEAD
       const response = await axios.post(`${apiUrl}/login`, {
+=======
+      const response = await api.post("/login", {
+>>>>>>> testes
         username,
         password,
       });

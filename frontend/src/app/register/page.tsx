@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import axios from "axios";
+import { api } from "../../lib/axios";
 import { useRouter } from "next/navigation";
 
 export default function Register() {
@@ -20,7 +20,11 @@ export default function Register() {
       return;
     }
     try {
+<<<<<<< HEAD
       await axios.post(`${apiUrl}/register`, {
+=======
+      await api.post("/register", {
+>>>>>>> testes
         username,
         name,
         password,
