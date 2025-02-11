@@ -17,6 +17,10 @@ export default function EditWorkout() {
   const [name, setName] = useState("");
   const [exercises, setExercises] = useState<string[]>([]);
   const [newExercise, setNewExercise] = useState("");
+  const [editingExerciseIndex, setEditingExerciseIndex] = useState<
+    number | null
+  >(null);
+  const [editingExerciseText, setEditingExerciseText] = useState("");
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
   const { id } = useParams();
@@ -80,6 +84,22 @@ export default function EditWorkout() {
     setExercises(updatedExercises);
   };
 
+  const handleEditExercise = (index: number) => {
+    setEditingExerciseIndex(index);
+    setEditingExerciseText(exercises[index]);
+  };
+
+  const handleSaveEditedExercise = () => {
+    if (editingExerciseIndex !== null) {
+      const updatedExercises = exercises.map((exercise, index) =>
+        index === editingExerciseIndex ? editingExerciseText : exercise
+      );
+      setExercises(updatedExercises);
+      setEditingExerciseIndex(null);
+      setEditingExerciseText("");
+    }
+  };
+
   const handleBack = () => {
     router.push("/dashboard");
   };
@@ -108,7 +128,19 @@ export default function EditWorkout() {
                 key={index}
                 className="flex justify-between items-center mb-2 p-2 bg-base-100 rounded"
               >
-                {exercise}
+                {editingExerciseIndex === index ? (
+                  <input
+                    type="text"
+                    value={editingExerciseText}
+                    onChange={(e) => setEditingExerciseText(e.target.value)}
+                    onBlur={handleSaveEditedExercise}
+                    className="input input-bordered w-full text-sm"
+                  />
+                ) : (
+                  <span onClick={() => handleEditExercise(index)}>
+                    {exercise}
+                  </span>
+                )}
                 <button
                   onClick={() => handleDeleteExercise(index)}
                   className="btn btn-error btn-xs"
