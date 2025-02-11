@@ -11,7 +11,6 @@ export default function Register() {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [error, setError] = useState("");
   const router = useRouter();
-  const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -20,11 +19,7 @@ export default function Register() {
       return;
     }
     try {
-<<<<<<< HEAD
-      await axios.post(`${apiUrl}/register`, {
-=======
       await api.post("/register", {
->>>>>>> testes
         username,
         name,
         password,
