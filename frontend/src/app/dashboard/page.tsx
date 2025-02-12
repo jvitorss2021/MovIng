@@ -4,8 +4,6 @@ import { useEffect, useState } from "react";
 import { api } from "../../lib/axios";
 import { useRouter } from "next/navigation";
 import Loading from "../components/Loading";
-import Image from "next/image";
-import gif from "../../../public/gif.webp"; // Certifique-se de ajustar o caminho conforme necessário
 
 type Workout = {
   id: number;
@@ -83,15 +81,16 @@ export default function Dashboard() {
   }
 
   return (
-    <div className="p-6 bg-base-200 min-h-screen">
+    <div className="flex flex-col min-h-screen p-6 bg-base-200">
       <div className="flex justify-between items-center mb-6">
         <div className="flex items-center">
-          <h1 className="text-3xl text-primary">MovIng</h1>
-          <Image
-            src={gif}
-            alt="Loading GIF"
-            width={50}
-            height={50}
+          <video
+            src="/video.webm"
+            width={200}
+            height={200}
+            autoPlay
+            loop
+            muted
             className="ml-4"
           />
         </div>
@@ -99,7 +98,7 @@ export default function Dashboard() {
           Logout
         </button>
       </div>
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="flex-grow grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
         {workouts.map((workout) => (
           <div key={workout.id} className="card-compact bg-base-100 shadow-xl">
             <div className="card-body">
