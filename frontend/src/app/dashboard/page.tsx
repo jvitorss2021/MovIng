@@ -82,21 +82,16 @@ export default function Dashboard() {
 
   return (
     <div className="flex flex-col min-h-screen p-6 bg-base-200">
-      <div className="flex justify-between items-center mb-6">
-        <div className="flex items-center">
-          <video
-            src="/video.webm"
-            width={200}
-            height={200}
-            autoPlay
-            loop
-            muted
-            className="ml-4"
-          />
-        </div>
-        <button onClick={handleLogout} className="btn bg-red-800">
-          Logout
-        </button>
+      <div className="flex justify-center mb-6">
+        <video
+          src="/video.webm"
+          width={200}
+          height={200}
+          autoPlay
+          loop
+          muted
+          className="ml-4"
+        />
       </div>
       <div className="flex-grow grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
         {workouts.map((workout) => (
@@ -126,6 +121,11 @@ export default function Dashboard() {
             </button>
           </div>
         </div>
+      </div>
+      <div className="mt-6 flex justify-center">
+        <button onClick={handleLogout} className="btn bg-red-800">
+          Logout
+        </button>
       </div>
     </div>
   );
