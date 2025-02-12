@@ -3,6 +3,9 @@
 import { useEffect, useState } from "react";
 import { api } from "../../lib/axios";
 import { useRouter } from "next/navigation";
+import Loading from "../components/Loading";
+import Image from "next/image";
+import gif from "../../../public/gif.webp"; // Certifique-se de ajustar o caminho conforme necessário
 
 type Workout = {
   id: number;
@@ -14,6 +17,7 @@ type Workout = {
 
 export default function Dashboard() {
   const [workouts, setWorkouts] = useState<Workout[]>([]);
+  const [loading, setLoading] = useState(true);
   const router = useRouter();
 
   useEffect(() => {
@@ -26,6 +30,8 @@ export default function Dashboard() {
         setWorkouts(response.data);
       } catch (error) {
         console.error("Failed to fetch workouts", error);
+      } finally {
+        setLoading(false);
       }
     };
 
@@ -72,10 +78,23 @@ export default function Dashboard() {
     router.push("/login");
   };
 
+  if (loading) {
+    return <Loading />;
+  }
+
   return (
     <div className="p-6 bg-base-200 min-h-screen">
       <div className="flex justify-between items-center mb-6">
-        <h1 className="text-3xl text-primary">MovIng</h1>
+        <div className="flex items-center">
+          <h1 className="text-3xl text-primary">MovIng</h1>
+          <Image
+            src={gif}
+            alt="Loading GIF"
+            width={50}
+            height={50}
+            className="ml-4"
+          />
+        </div>
         <button onClick={handleLogout} className="btn bg-red-800">
           Logout
         </button>
@@ -84,12 +103,12 @@ export default function Dashboard() {
         {workouts.map((workout) => (
           <div key={workout.id} className="card-compact bg-base-100 shadow-xl">
             <div className="card-body">
-              <h2
+              <button
                 className="card-title text-xl font-bold cursor-pointer text-primary hover:underline"
                 onClick={() => handleEdit(workout.id)}
               >
                 {workout.name}
-              </h2>
+              </button>
               <div className="card-actions justify-end">
                 <button
                   onClick={() => handleDelete(workout.id)}

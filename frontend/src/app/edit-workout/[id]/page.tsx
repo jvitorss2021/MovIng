@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { api } from "../../../lib/axios";
 import { useRouter, useParams } from "next/navigation";
+import Loading from "../../components/Loading";
 
 type Workout = {
   id: number;
@@ -22,6 +23,7 @@ export default function EditWorkout() {
   >(null);
   const [editingExerciseText, setEditingExerciseText] = useState("");
   const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
   const router = useRouter();
   const { id } = useParams();
 
@@ -38,6 +40,8 @@ export default function EditWorkout() {
       } catch (error) {
         console.error("Failed to fetch workout", error);
         setError("Failed to fetch workout");
+      } finally {
+        setLoading(false);
       }
     };
 
@@ -103,6 +107,10 @@ export default function EditWorkout() {
   const handleBack = () => {
     router.push("/dashboard");
   };
+
+  if (loading) {
+    return <Loading />;
+  }
 
   if (!workout) return <div>Loading...</div>;
 
