@@ -8,16 +8,21 @@
     "forceConsistentCasingInFileNames": true,
     "outDir": "./dist",
     "rootDir": "./src",
-    "baseUrl": "./",
-    "paths": {
-      "*": [
-        "node_modules/*",
-        "@types/*"
-      ]
-    }
+    "baseUrl": "./src",
+    "typeRoots": [
+      "./node_modules/@types",
+      "./src/types"
+    ],
+    "types": [
+      "node",
+      "express"
+    ],
+    "declaration": true
   },
   "include": [
-    "src",
-    "types"
+    "src/**/*"
+  ],
+  "exclude": [
+    "node_modules"
   ]
 }
