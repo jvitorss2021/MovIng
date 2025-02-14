@@ -104,7 +104,7 @@ export default function Dashboard() {
           autoPlay
           loop
           muted
-          className="rounded-full shadow-lg"
+          className="rounded-full shadow-lg w-[150px] h-[150px] md:w-[300px] md:h-[300px]"
         />
       </div>
 
