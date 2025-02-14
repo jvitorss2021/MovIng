@@ -6,16 +6,18 @@ import { useRouter, useParams } from "next/navigation";
 import Loading from "../../components/Loading";
 
 type Exercise = {
+  id: number;
   name: string;
   sets: number;
   reps: number;
   weight: number;
+  workoutId: number;
 };
 
 type Workout = {
   id: number;
   name: string;
-  exercises: string;
+  exercises: Exercise[];
   userId: number;
   createdAt: string;
 };
@@ -44,13 +46,7 @@ export default function EditWorkout() {
         });
         setWorkout(response.data);
         setName(response.data.name);
-        const parsedExercises = JSON.parse(response.data.exercises);
-        setExercises(parsedExercises.map((name: string) => ({
-          name,
-          sets: 3,
-          reps: 12,
-          weight: 0
-        })));
+        setExercises(response.data.exercises);
       } catch (error) {
         console.error("Failed to fetch workout", error);
         setError("Failed to fetch workout");
@@ -69,7 +65,7 @@ export default function EditWorkout() {
         `/workouts/${id}`,
         { 
           name, 
-          exercises: JSON.stringify(exercises)
+          exercises
         },
         {
           headers: { Authorization: `Bearer ${token}` },
@@ -88,10 +84,12 @@ export default function EditWorkout() {
       return;
     }
     setExercises([...exercises, {
+      id: 0,
       name: newExercise,
       sets: 3,
       reps: 12,
-      weight: 0
+      weight: 0,
+      workoutId: 0
     }]);
     setNewExercise("");
     setError(null);

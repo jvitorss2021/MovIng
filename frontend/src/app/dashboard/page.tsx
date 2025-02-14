@@ -5,10 +5,19 @@ import { api } from "../../lib/axios";
 import { useRouter } from "next/navigation";
 import Loading from "../components/Loading";
 
+type Exercise = {
+  id: number;
+  name: string;
+  sets: number;
+  reps: number;
+  weight: number;
+  workoutId: number;
+};
+
 type Workout = {
   id: number;
   name: string;
-  exercises: string;
+  exercises: Exercise[];
   userId: number;
   createdAt: string;
 };
@@ -43,7 +52,7 @@ export default function Dashboard() {
         "/workouts",
         {
           name: `Treino ${String.fromCharCode(65 + workouts.length)}`,
-          exercises: JSON.stringify([]),
+          exercises: []
         },
         {
           headers: { Authorization: `Bearer ${token}` },
@@ -111,44 +120,41 @@ export default function Dashboard() {
       {/* Workout List */}
       <div className="flex-1 p-4">
         <div className="space-y-3">
-          {workouts.map((workout) => {
-            const exerciseCount = JSON.parse(workout.exercises).length;
-            return (
-              <div
-                key={workout.id}
-                className="bg-base-100 rounded-lg shadow-md overflow-hidden touch-manipulation"
+          {workouts.map((workout) => (
+            <div
+              key={workout.id}
+              className="bg-base-100 rounded-lg shadow-md overflow-hidden touch-manipulation"
+            >
+              <div 
+                className="p-4 cursor-pointer hover:bg-base-200 transition-colors active:bg-base-300"
+                onClick={(e) => {
+                  e.preventDefault();
+                  handleEdit(workout.id);
+                }}
               >
-                <div 
-                  className="p-4 cursor-pointer hover:bg-base-200 transition-colors active:bg-base-300"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    handleEdit(workout.id);
-                  }}
-                >
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <h2 className="text-lg font-semibold text-primary select-none">
-                        {workout.name}
-                      </h2>
-                      <p className="text-sm text-base-content/70 select-none">
-                        {exerciseCount} {exerciseCount === 1 ? 'exercise' : 'exercises'}
-                      </p>
-                    </div>
-                    <button
-                      onClick={(e) => {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        handleDelete(workout.id);
-                      }}
-                      className="btn btn-ghost btn-sm text-error select-none"
-                    >
-                      Delete
-                    </button>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h2 className="text-lg font-semibold text-primary select-none">
+                      {workout.name}
+                    </h2>
+                    <p className="text-sm text-base-content/70 select-none">
+                      {workout.exercises.length} {workout.exercises.length === 1 ? 'exercício' : 'exercícios'}
+                    </p>
                   </div>
+                  <button
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      handleDelete(workout.id);
+                    }}
+                    className="btn btn-ghost btn-sm text-error select-none"
+                  >
+                    Delete
+                  </button>
                 </div>
               </div>
-            );
-          })}
+            </div>
+          ))}
         </div>
       </div>
 

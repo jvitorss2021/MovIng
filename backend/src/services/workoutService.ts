@@ -35,10 +35,7 @@ export class WorkoutService {
       }
     });
 
-    return workouts.map(workout => ({
-      ...workout,
-      exercises: JSON.stringify(workout.exercises)
-    }));
+    return workouts;
   }
 
   async getWorkoutById(id: number, userId: number) {
@@ -56,21 +53,16 @@ export class WorkoutService {
       throw new Error('Treino não encontrado');
     }
     
-    return {
-      ...workout,
-      exercises: JSON.stringify(workout.exercises)
-    };
+    return workout;
   }
 
   async createWorkout(data: WorkoutCreateData) {
-    const exercises = JSON.parse(data.exercises as unknown as string);
-    
     const workout = await prisma.workout.create({
       data: {
         name: data.name,
         userId: data.userId,
         exercises: {
-          create: exercises.map((exercise: any) => ({
+          create: data.exercises.map(exercise => ({
             name: exercise.name,
             sets: exercise.sets || 3,
             reps: exercise.reps || 12,
@@ -83,15 +75,10 @@ export class WorkoutService {
       }
     });
 
-    return {
-      ...workout,
-      exercises: JSON.stringify(workout.exercises)
-    };
+    return workout;
   }
 
   async updateWorkout(id: number, userId: number, data: WorkoutUpdateData) {
-    const exercises = JSON.parse(data.exercises as unknown as string);
-
     // Primeiro deletamos todos os exercícios existentes
     await prisma.exercise.deleteMany({
       where: {
@@ -108,12 +95,12 @@ export class WorkoutService {
       data: {
         name: data.name,
         exercises: {
-          create: exercises.map((exercise: any) => ({
+          create: data.exercises?.map(exercise => ({
             name: exercise.name,
             sets: exercise.sets || 3,
             reps: exercise.reps || 12,
             weight: exercise.weight || 0
-          }))
+          })) || []
         }
       },
       include: {
@@ -121,10 +108,7 @@ export class WorkoutService {
       }
     });
 
-    return {
-      ...workout,
-      exercises: JSON.stringify(workout.exercises)
-    };
+    return workout;
   }
 
   async deleteWorkout(id: number, userId: number) {
