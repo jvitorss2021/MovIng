@@ -65,22 +65,14 @@ export default function EditWorkout() {
     }
   };
 
-  const handleAddExercise = async () => {
-    const token = localStorage.getItem("token");
-    try {
-      const response = await api.post(
-        `/workouts/${id}/exercises`,
-        { exercise: newExercise },
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
-      );
-      setExercises(JSON.parse(response.data.exercises));
-      setNewExercise("");
-    } catch (error) {
-      console.error("Failed to add exercise", error);
-      setError("Failed to add exercise");
+  const handleAddExercise = () => {
+    if (!newExercise.trim()) {
+      setError("Exercise name cannot be empty");
+      return;
     }
+    setExercises([...exercises, newExercise]);
+    setNewExercise("");
+    setError(null);
   };
 
   const handleDeleteExercise = (index: number) => {
@@ -95,12 +87,17 @@ export default function EditWorkout() {
 
   const handleSaveEditedExercise = () => {
     if (editingExerciseIndex !== null) {
+      if (!editingExerciseText.trim()) {
+        setError("Exercise name cannot be empty");
+        return;
+      }
       const updatedExercises = exercises.map((exercise, index) =>
         index === editingExerciseIndex ? editingExerciseText : exercise
       );
       setExercises(updatedExercises);
       setEditingExerciseIndex(null);
       setEditingExerciseText("");
+      setError(null);
     }
   };
 
@@ -134,7 +131,7 @@ export default function EditWorkout() {
             {exercises.map((exercise, index) => (
               <li
                 key={index}
-                className="flex justify-between items-center mb-2 p-2 bg-base-100 rounded"
+                className="flex justify-between items-center mb-2 p-2 bg-base-200 rounded"
               >
                 {editingExerciseIndex === index ? (
                   <input
@@ -142,37 +139,53 @@ export default function EditWorkout() {
                     value={editingExerciseText}
                     onChange={(e) => setEditingExerciseText(e.target.value)}
                     onBlur={handleSaveEditedExercise}
+                    onKeyPress={(e) => {
+                      if (e.key === 'Enter') {
+                        handleSaveEditedExercise();
+                      }
+                    }}
                     className="input input-bordered w-full text-sm"
+                    autoFocus
                   />
                 ) : (
-                  <span onClick={() => handleEditExercise(index)}>
+                  <span 
+                    onClick={() => handleEditExercise(index)}
+                    className="cursor-pointer hover:text-primary"
+                  >
                     {exercise}
                   </span>
                 )}
                 <button
                   onClick={() => handleDeleteExercise(index)}
-                  className="btn btn-error btn-xs"
+                  className="btn btn-error btn-xs ml-2"
                 >
                   Delete
                 </button>
               </li>
             ))}
           </ul>
-          <input
-            type="text"
-            value={newExercise}
-            onChange={(e) => setNewExercise(e.target.value)}
-            className="input input-bordered w-full text-sm mt-2"
-            placeholder="Add new exercise"
-          />
-          <button
-            onClick={handleAddExercise}
-            className="btn btn-primary mt-2 text-sm"
-          >
-            Add
-          </button>
+          <div className="flex gap-2 mt-2">
+            <input
+              type="text"
+              value={newExercise}
+              onChange={(e) => setNewExercise(e.target.value)}
+              onKeyPress={(e) => {
+                if (e.key === 'Enter') {
+                  handleAddExercise();
+                }
+              }}
+              className="input input-bordered flex-1 text-sm"
+              placeholder="Add new exercise"
+            />
+            <button
+              onClick={handleAddExercise}
+              className="btn btn-primary text-sm"
+            >
+              Add
+            </button>
+          </div>
         </div>
-        <div className="flex justify-between">
+        <div className="flex justify-between mt-6">
           <button onClick={handleBack} className="btn btn-secondary text-sm">
             Back
           </button>
