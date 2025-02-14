@@ -81,12 +81,15 @@ export default function Dashboard() {
   }
 
   return (
-    <div className="flex flex-col min-h-screen bg-base-200">
+    <div className="flex flex-col min-h-screen bg-base-200 select-none">
       {/* Header */}
       <div className="sticky top-0 z-10 bg-base-100 shadow-md p-4">
         <div className="flex items-center justify-between">
           <h1 className="text-xl font-bold text-primary">My Workouts</h1>
-          <button onClick={handleLogout} className="btn btn-ghost btn-sm text-error">
+          <button 
+            onClick={handleLogout} 
+            className="btn btn-ghost btn-sm text-error"
+          >
             Logout
           </button>
         </div>
@@ -113,27 +116,31 @@ export default function Dashboard() {
             return (
               <div
                 key={workout.id}
-                className="bg-base-100 rounded-lg shadow-md overflow-hidden"
+                className="bg-base-100 rounded-lg shadow-md overflow-hidden touch-manipulation"
               >
                 <div 
-                  className="p-4 cursor-pointer hover:bg-base-200 transition-colors"
-                  onClick={() => handleEdit(workout.id)}
+                  className="p-4 cursor-pointer hover:bg-base-200 transition-colors active:bg-base-300"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    handleEdit(workout.id);
+                  }}
                 >
                   <div className="flex items-center justify-between">
                     <div>
-                      <h2 className="text-lg font-semibold text-primary">
+                      <h2 className="text-lg font-semibold text-primary select-none">
                         {workout.name}
                       </h2>
-                      <p className="text-sm text-base-content/70">
+                      <p className="text-sm text-base-content/70 select-none">
                         {exerciseCount} {exerciseCount === 1 ? 'exercise' : 'exercises'}
                       </p>
                     </div>
                     <button
                       onClick={(e) => {
+                        e.preventDefault();
                         e.stopPropagation();
                         handleDelete(workout.id);
                       }}
-                      className="btn btn-ghost btn-sm text-error"
+                      className="btn btn-ghost btn-sm text-error select-none"
                     >
                       Delete
                     </button>
@@ -149,7 +156,7 @@ export default function Dashboard() {
       <div className="fixed bottom-6 right-6">
         <button
           onClick={handleAddWorkout}
-          className="btn btn-primary btn-circle btn-lg shadow-lg"
+          className="btn btn-primary btn-circle btn-lg shadow-lg select-none"
         >
           +
         </button>
