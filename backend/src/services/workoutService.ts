@@ -1,6 +1,9 @@
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient, Prisma } from '@prisma/client';
 
 const prisma = new PrismaClient();
+
+type WorkoutCreateData = Prisma.WorkoutUncheckedCreateInput;
+type WorkoutUpdateData = Prisma.WorkoutUncheckedUpdateInput;
 
 export class WorkoutService {
   async getAllWorkouts(userId: number) {
@@ -28,14 +31,14 @@ export class WorkoutService {
     return workout;
   }
 
-  async createWorkout(data: { name: string, exercises: string, userId: number }) {
+  async createWorkout(data: WorkoutCreateData) {
     const workout = await prisma.workout.create({
       data
     });
     return workout;
   }
 
-  async updateWorkout(id: number, userId: number, data: { name: string, exercises: string }) {
+  async updateWorkout(id: number, userId: number, data: WorkoutUpdateData) {
     const workout = await prisma.workout.update({
       where: { 
         id,
