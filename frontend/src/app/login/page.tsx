@@ -70,13 +70,13 @@ export default function Login() {
             </button>
           </div>
         </div>
-        <button type="submit" className="btn btn-primary w-full mb-4">
+        <button type="submit" className="btn btn-primary btn-lg w-full mb-4">
           Login
         </button>
         <button
           type="button"
           onClick={() => router.push("/register")}
-          className="btn btn-secondary w-full"
+          className="btn btn-outline btn-lg w-full"
         >
           Register
         </button>

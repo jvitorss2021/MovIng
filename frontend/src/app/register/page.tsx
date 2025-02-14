@@ -84,13 +84,13 @@ export default function Register() {
             className="input input-bordered w-full"
           />
         </div>
-        <button type="submit" className="btn btn-primary w-full mb-4">
+        <button type="submit" className="btn btn-primary btn-lg w-full mb-4">
           Register
         </button>
         <button
           type="button"
           onClick={() => router.push("/login")}
-          className="btn btn-secondary w-full"
+          className="btn btn-outline btn-lg w-full"
         >
           Login
         </button>
