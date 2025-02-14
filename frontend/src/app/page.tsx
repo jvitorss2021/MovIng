@@ -18,13 +18,13 @@ export default function Home() {
       {/* Logo Section */}
       <div className="flex-1 flex flex-col items-center justify-center">
         <div className="flex flex-col items-center">
-          <div className="relative w-[200px] h-[200px] mb-8">
+          <div className="mb-8">
             <video
               src="/video.webm"
               autoPlay
               loop
               muted
-              className="absolute inset-0 w-full h-full object-cover rounded-full shadow-lg"
+              className="rounded-full shadow-lg w-[200px] h-[200px] md:w-[300px] md:h-[300px]"
             />
           </div>
           <h1 className="text-4xl font-bold text-primary">
