@@ -330,10 +330,10 @@ export default function EditWorkout() {
                 <label className="block text-sm mb-1">Séries</label>
                 <input
                   type="number"
-                  value={editingExercise.sets}
+                  value={editingExercise.sets === 0 ? '' : editingExercise.sets}
                   onChange={(e) => setEditingExercise({
                     ...editingExercise,
-                    sets: parseInt(e.target.value) || 0
+                    sets: e.target.value === '' ? 0 : parseInt(e.target.value)
                   })}
                   className="input input-bordered w-full"
                   min="1"
@@ -344,10 +344,10 @@ export default function EditWorkout() {
                 <label className="block text-sm mb-1">Repetições</label>
                 <input
                   type="number"
-                  value={editingExercise.reps}
+                  value={editingExercise.reps === 0 ? '' : editingExercise.reps}
                   onChange={(e) => setEditingExercise({
                     ...editingExercise,
-                    reps: parseInt(e.target.value) || 0
+                    reps: e.target.value === '' ? 0 : parseInt(e.target.value)
                   })}
                   className="input input-bordered w-full"
                   min="1"
@@ -358,10 +358,10 @@ export default function EditWorkout() {
                 <label className="block text-sm mb-1">Carga (kg)</label>
                 <input
                   type="number"
-                  value={editingExercise.weight}
+                  value={editingExercise.weight === 0 ? '' : editingExercise.weight}
                   onChange={(e) => setEditingExercise({
                     ...editingExercise,
-                    weight: parseFloat(e.target.value) || 0
+                    weight: e.target.value === '' ? 0 : parseFloat(e.target.value)
                   })}
                   className="input input-bordered w-full"
                   min="0"
