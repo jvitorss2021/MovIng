@@ -5,6 +5,13 @@ import { api } from "../../../lib/axios";
 import { useRouter, useParams } from "next/navigation";
 import Loading from "../../components/Loading";
 
+type Exercise = {
+  name: string;
+  sets: number;
+  reps: number;
+  weight: number;
+};
+
 type Workout = {
   id: number;
   name: string;
@@ -16,12 +23,15 @@ type Workout = {
 export default function EditWorkout() {
   const [workout, setWorkout] = useState<Workout | null>(null);
   const [name, setName] = useState("");
-  const [exercises, setExercises] = useState<string[]>([]);
+  const [exercises, setExercises] = useState<Exercise[]>([]);
   const [newExercise, setNewExercise] = useState("");
   const [editingExerciseIndex, setEditingExerciseIndex] = useState<number | null>(null);
-  const [editingExerciseText, setEditingExerciseText] = useState("");
+  const [editingExercise, setEditingExercise] = useState<Exercise | null>(null);
+  const [editingName, setEditingName] = useState<string>("");
+  const [showNameModal, setShowNameModal] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
+  const [showModal, setShowModal] = useState(false);
   const router = useRouter();
   const { id } = useParams();
 
@@ -34,7 +44,13 @@ export default function EditWorkout() {
         });
         setWorkout(response.data);
         setName(response.data.name);
-        setExercises(JSON.parse(response.data.exercises));
+        const parsedExercises = JSON.parse(response.data.exercises);
+        setExercises(parsedExercises.map((name: string) => ({
+          name,
+          sets: 3,
+          reps: 12,
+          weight: 0
+        })));
       } catch (error) {
         console.error("Failed to fetch workout", error);
         setError("Failed to fetch workout");
@@ -51,7 +67,10 @@ export default function EditWorkout() {
     try {
       await api.put(
         `/workouts/${id}`,
-        { name, exercises: JSON.stringify(exercises) },
+        { 
+          name, 
+          exercises: JSON.stringify(exercises)
+        },
         {
           headers: { Authorization: `Bearer ${token}` },
         }
@@ -68,7 +87,12 @@ export default function EditWorkout() {
       setError("Exercise name cannot be empty");
       return;
     }
-    setExercises([...exercises, newExercise]);
+    setExercises([...exercises, {
+      name: newExercise,
+      sets: 3,
+      reps: 12,
+      weight: 0
+    }]);
     setNewExercise("");
     setError(null);
   };
@@ -78,24 +102,41 @@ export default function EditWorkout() {
     setExercises(updatedExercises);
   };
 
-  const handleEditExercise = (index: number) => {
+  const handleEditExercise = (exercise: Exercise, index: number) => {
     setEditingExerciseIndex(index);
-    setEditingExerciseText(exercises[index]);
+    setEditingExercise({ ...exercise });
+    setShowModal(true);
   };
 
-  const handleSaveEditedExercise = () => {
-    if (editingExerciseIndex !== null) {
-      if (!editingExerciseText.trim()) {
-        setError("Exercise name cannot be empty");
-        return;
-      }
+  const handleSaveExerciseDetails = () => {
+    if (editingExerciseIndex !== null && editingExercise) {
       const updatedExercises = exercises.map((exercise, index) =>
-        index === editingExerciseIndex ? editingExerciseText : exercise
+        index === editingExerciseIndex ? editingExercise : exercise
       );
       setExercises(updatedExercises);
+      setShowModal(false);
       setEditingExerciseIndex(null);
-      setEditingExerciseText("");
-      setError(null);
+      setEditingExercise(null);
+    }
+  };
+
+  const handleEditName = (exercise: Exercise, index: number) => {
+    setEditingExerciseIndex(index);
+    setEditingName(exercise.name);
+    setShowNameModal(true);
+  };
+
+  const handleSaveExerciseName = () => {
+    if (editingExerciseIndex !== null && editingName.trim()) {
+      const updatedExercises = exercises.map((exercise, index) =>
+        index === editingExerciseIndex 
+          ? { ...exercise, name: editingName.trim() }
+          : exercise
+      );
+      setExercises(updatedExercises);
+      setShowNameModal(false);
+      setEditingExerciseIndex(null);
+      setEditingName("");
     }
   };
 
@@ -141,45 +182,46 @@ export default function EditWorkout() {
 
         {/* Exercises List */}
         <div>
-          <label className="block text-primary text-sm mb-2">Exercises</label>
+          <label className="block text-primary text-sm mb-2">Exercícios</label>
           <div className="space-y-2 mb-4">
             {exercises.map((exercise, index) => (
               <div
                 key={index}
-                className="bg-base-100 rounded-lg shadow-sm"
+                className="bg-base-100 rounded-lg shadow-sm hover:bg-base-200 transition-colors"
               >
-                {editingExerciseIndex === index ? (
-                  <div className="p-3">
-                    <input
-                      type="text"
-                      value={editingExerciseText}
-                      onChange={(e) => setEditingExerciseText(e.target.value)}
-                      onBlur={handleSaveEditedExercise}
-                      onKeyPress={(e) => {
-                        if (e.key === 'Enter') {
-                          handleSaveEditedExercise();
-                        }
-                      }}
-                      className="input input-bordered w-full"
-                      autoFocus
-                    />
-                  </div>
-                ) : (
-                  <div className="p-3 flex items-center justify-between">
-                    <span 
-                      onClick={() => handleEditExercise(index)}
-                      className="flex-1 cursor-pointer hover:text-primary"
+                <div className="p-3">
+                  <div className="flex flex-col">
+                    <div className="flex items-center justify-between mb-1">
+                      <div className="flex items-center gap-2">
+                        <span className="font-medium">{exercise.name}</span>
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleEditName(exercise, index);
+                          }}
+                          className="btn btn-ghost btn-xs"
+                        >
+                          ✎
+                        </button>
+                      </div>
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleDeleteExercise(index);
+                        }}
+                        className="btn btn-ghost btn-sm text-error"
+                      >
+                        ×
+                      </button>
+                    </div>
+                    <div 
+                      className="text-sm text-base-content/70 cursor-pointer"
+                      onClick={() => handleEditExercise(exercise, index)}
                     >
-                      {exercise}
-                    </span>
-                    <button
-                      onClick={() => handleDeleteExercise(index)}
-                      className="btn btn-ghost btn-sm text-error"
-                    >
-                      ×
-                    </button>
+                      {exercise.sets} séries × {exercise.reps} reps • {exercise.weight}kg
+                    </div>
                   </div>
-                )}
+                </div>
               </div>
             ))}
           </div>
@@ -211,6 +253,142 @@ export default function EditWorkout() {
           <div className="h-20" />
         </div>
       </div>
+
+      {/* Exercise Name Edit Modal */}
+      {showNameModal && (
+        <div 
+          className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50"
+          onClick={(e) => {
+            if (e.target === e.currentTarget) {
+              setShowNameModal(false);
+            }
+          }}
+        >
+          <div className="bg-base-100 rounded-lg p-6 w-full max-w-sm">
+            <div className="flex justify-between items-center mb-4">
+              <h3 className="text-lg font-bold">Editar Nome do Exercício</h3>
+              <button 
+                onClick={() => setShowNameModal(false)}
+                className="btn btn-ghost btn-sm"
+              >
+                ×
+              </button>
+            </div>
+            
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm mb-1">Nome</label>
+                <input
+                  type="text"
+                  value={editingName}
+                  onChange={(e) => setEditingName(e.target.value)}
+                  className="input input-bordered w-full"
+                  placeholder="Nome do exercício"
+                />
+              </div>
+            </div>
+
+            <div className="flex gap-2 mt-6">
+              <button
+                onClick={() => setShowNameModal(false)}
+                className="btn btn-outline flex-1"
+              >
+                Cancelar
+              </button>
+              <button
+                onClick={handleSaveExerciseName}
+                className="btn btn-primary flex-1"
+              >
+                Salvar
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Exercise Details Modal */}
+      {showModal && editingExercise && (
+        <div 
+          className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50"
+          onClick={(e) => {
+            if (e.target === e.currentTarget) {
+              setShowModal(false);
+            }
+          }}
+        >
+          <div className="bg-base-100 rounded-lg p-6 w-full max-w-sm">
+            <div className="flex justify-between items-center mb-4">
+              <h3 className="text-lg font-bold">{editingExercise.name}</h3>
+              <button 
+                onClick={() => setShowModal(false)}
+                className="btn btn-ghost btn-sm"
+              >
+                ×
+              </button>
+            </div>
+            
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm mb-1">Séries</label>
+                <input
+                  type="number"
+                  value={editingExercise.sets}
+                  onChange={(e) => setEditingExercise({
+                    ...editingExercise,
+                    sets: parseInt(e.target.value) || 0
+                  })}
+                  className="input input-bordered w-full"
+                  min="1"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm mb-1">Repetições</label>
+                <input
+                  type="number"
+                  value={editingExercise.reps}
+                  onChange={(e) => setEditingExercise({
+                    ...editingExercise,
+                    reps: parseInt(e.target.value) || 0
+                  })}
+                  className="input input-bordered w-full"
+                  min="1"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm mb-1">Carga (kg)</label>
+                <input
+                  type="number"
+                  value={editingExercise.weight}
+                  onChange={(e) => setEditingExercise({
+                    ...editingExercise,
+                    weight: parseFloat(e.target.value) || 0
+                  })}
+                  className="input input-bordered w-full"
+                  min="0"
+                  step="0.5"
+                />
+              </div>
+            </div>
+
+            <div className="flex gap-2 mt-6">
+              <button
+                onClick={() => setShowModal(false)}
+                className="btn btn-outline flex-1"
+              >
+                Cancelar
+              </button>
+              <button
+                onClick={handleSaveExerciseDetails}
+                className="btn btn-primary flex-1"
+              >
+                Salvar
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
