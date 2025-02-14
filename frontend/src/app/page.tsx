@@ -16,21 +16,21 @@ export default function Home() {
   return (
     <div className="flex flex-col min-h-screen bg-base-200">
       {/* Logo Section */}
-      <div className="flex-1 flex flex-col items-center justify-center p-6">
-        <div className="mb-8">
-          <video
-            src="/video.webm"
-            width={200}
-            height={200}
-            autoPlay
-            loop
-            muted
-            className="rounded-full shadow-lg mb-6"
-          />
-          <h1 className="text-4xl font-bold text-primary text-center">
+      <div className="flex-1 flex flex-col items-center justify-center">
+        <div className="flex flex-col items-center">
+          <div className="relative w-[200px] h-[200px] mb-8">
+            <video
+              src="/video.webm"
+              autoPlay
+              loop
+              muted
+              className="absolute inset-0 w-full h-full object-cover rounded-full shadow-lg"
+            />
+          </div>
+          <h1 className="text-4xl font-bold text-primary">
             MovIng
           </h1>
-          <p className="text-center text-base-content/70 mt-2">
+          <p className="text-base-content/70 mt-2">
             Track your workouts, achieve your goals
           </p>
         </div>

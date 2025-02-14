@@ -12,6 +12,7 @@ const port = process.env.PORT || 5000;
 const allowedOrigins = [
   "http://localhost:3000",
   "https://mov-ing-3s8b.vercel.app",
+  "https://moving-e3yk.onrender.com"
 ];
 
 const corsOptions = {
