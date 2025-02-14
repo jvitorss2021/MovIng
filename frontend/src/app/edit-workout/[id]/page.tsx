@@ -18,9 +18,7 @@ export default function EditWorkout() {
   const [name, setName] = useState("");
   const [exercises, setExercises] = useState<string[]>([]);
   const [newExercise, setNewExercise] = useState("");
-  const [editingExerciseIndex, setEditingExerciseIndex] = useState<
-    number | null
-  >(null);
+  const [editingExerciseIndex, setEditingExerciseIndex] = useState<number | null>(null);
   const [editingExerciseText, setEditingExerciseText] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
@@ -112,86 +110,105 @@ export default function EditWorkout() {
   if (!workout) return <div>Loading...</div>;
 
   return (
-    <div className="p-6 bg-base-200 min-h-screen">
-      <h1 className="text-3xl mb-6 text-primary">Edit Workout</h1>
-      <div className="bg-base-100 p-6 rounded shadow-md w-full max-w-sm">
+    <div className="flex flex-col min-h-screen bg-base-200">
+      {/* Header */}
+      <div className="sticky top-0 z-10 bg-base-100 shadow-md p-4">
+        <div className="flex items-center justify-between">
+          <button onClick={handleBack} className="btn btn-ghost btn-sm">
+            ← Back
+          </button>
+          <h1 className="text-xl font-bold text-primary">Edit Workout</h1>
+          <button onClick={handleSave} className="btn btn-primary btn-sm">
+            Save
+          </button>
+        </div>
+      </div>
+
+      {/* Main Content */}
+      <div className="flex-1 p-4">
         {error && <div className="alert alert-error mb-4">{error}</div>}
-        <div className="mb-4">
-          <label className="block text-primary text-sm">Name</label>
+        
+        {/* Workout Name */}
+        <div className="mb-6">
+          <label className="block text-primary text-sm mb-2">Workout Name</label>
           <input
             type="text"
             value={name}
             onChange={(e) => setName(e.target.value)}
-            className="input input-bordered w-full text-sm"
+            className="input input-bordered w-full"
           />
         </div>
-        <div className="mb-4">
-          <label className="block text-primary text-sm">Exercises</label>
-          <ul className="text-sm">
+
+        {/* Exercises List */}
+        <div>
+          <label className="block text-primary text-sm mb-2">Exercises</label>
+          <div className="space-y-2 mb-4">
             {exercises.map((exercise, index) => (
-              <li
+              <div
                 key={index}
-                className="flex justify-between items-center mb-2 p-2 bg-base-200 rounded"
+                className="bg-base-100 rounded-lg shadow-sm"
               >
                 {editingExerciseIndex === index ? (
-                  <input
-                    type="text"
-                    value={editingExerciseText}
-                    onChange={(e) => setEditingExerciseText(e.target.value)}
-                    onBlur={handleSaveEditedExercise}
-                    onKeyPress={(e) => {
-                      if (e.key === 'Enter') {
-                        handleSaveEditedExercise();
-                      }
-                    }}
-                    className="input input-bordered w-full text-sm"
-                    autoFocus
-                  />
+                  <div className="p-3">
+                    <input
+                      type="text"
+                      value={editingExerciseText}
+                      onChange={(e) => setEditingExerciseText(e.target.value)}
+                      onBlur={handleSaveEditedExercise}
+                      onKeyPress={(e) => {
+                        if (e.key === 'Enter') {
+                          handleSaveEditedExercise();
+                        }
+                      }}
+                      className="input input-bordered w-full"
+                      autoFocus
+                    />
+                  </div>
                 ) : (
-                  <span 
-                    onClick={() => handleEditExercise(index)}
-                    className="cursor-pointer hover:text-primary"
-                  >
-                    {exercise}
-                  </span>
+                  <div className="p-3 flex items-center justify-between">
+                    <span 
+                      onClick={() => handleEditExercise(index)}
+                      className="flex-1 cursor-pointer hover:text-primary"
+                    >
+                      {exercise}
+                    </span>
+                    <button
+                      onClick={() => handleDeleteExercise(index)}
+                      className="btn btn-ghost btn-sm text-error"
+                    >
+                      ×
+                    </button>
+                  </div>
                 )}
-                <button
-                  onClick={() => handleDeleteExercise(index)}
-                  className="btn btn-error btn-xs ml-2"
-                >
-                  Delete
-                </button>
-              </li>
+              </div>
             ))}
-          </ul>
-          <div className="flex gap-2 mt-2">
-            <input
-              type="text"
-              value={newExercise}
-              onChange={(e) => setNewExercise(e.target.value)}
-              onKeyPress={(e) => {
-                if (e.key === 'Enter') {
-                  handleAddExercise();
-                }
-              }}
-              className="input input-bordered flex-1 text-sm"
-              placeholder="Add new exercise"
-            />
-            <button
-              onClick={handleAddExercise}
-              className="btn btn-primary text-sm"
-            >
-              Add
-            </button>
           </div>
-        </div>
-        <div className="flex justify-between mt-6">
-          <button onClick={handleBack} className="btn btn-secondary text-sm">
-            Back
-          </button>
-          <button onClick={handleSave} className="btn btn-success text-sm">
-            Save
-          </button>
+
+          {/* Add Exercise Input */}
+          <div className="fixed bottom-0 left-0 right-0 bg-base-100 p-4 shadow-lg">
+            <div className="flex gap-2 max-w-lg mx-auto">
+              <input
+                type="text"
+                value={newExercise}
+                onChange={(e) => setNewExercise(e.target.value)}
+                onKeyPress={(e) => {
+                  if (e.key === 'Enter') {
+                    handleAddExercise();
+                  }
+                }}
+                className="input input-bordered flex-1"
+                placeholder="Add new exercise"
+              />
+              <button
+                onClick={handleAddExercise}
+                className="btn btn-primary"
+              >
+                Add
+              </button>
+            </div>
+          </div>
+          {/* Spacer to prevent content from being hidden behind fixed input */}
+          <div className="h-20" />
         </div>
       </div>
     </div>

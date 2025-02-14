@@ -14,21 +14,40 @@ export default function Home() {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-base-200 p-4">
-      <div className="flex flex-col items-center justify-center flex-grow">
-        <h1 className="text-6xl font-bold text-primary mb-8 text-center">
-          MovIng
-        </h1>
-        <div className="flex flex-col space-y-3 w-full max-w-xs">
+    <div className="flex flex-col min-h-screen bg-base-200">
+      {/* Logo Section */}
+      <div className="flex-1 flex flex-col items-center justify-center p-6">
+        <div className="mb-8">
+          <video
+            src="/video.webm"
+            width={200}
+            height={200}
+            autoPlay
+            loop
+            muted
+            className="rounded-full shadow-lg mb-6"
+          />
+          <h1 className="text-4xl font-bold text-primary text-center">
+            MovIng
+          </h1>
+          <p className="text-center text-base-content/70 mt-2">
+            Track your workouts, achieve your goals
+          </p>
+        </div>
+      </div>
+
+      {/* Action Buttons */}
+      <div className="p-6 bg-base-100 rounded-t-3xl shadow-lg">
+        <div className="flex flex-col gap-3 max-w-md mx-auto">
           <button
             onClick={handleLogin}
-            className="btn btn-primary w-full max-w-[200px]"
+            className="btn btn-primary btn-lg w-full"
           >
             Login
           </button>
           <button
             onClick={handleRegister}
-            className="btn btn-secondary w-full max-w-[200px]"
+            className="btn btn-outline btn-lg w-full"
           >
             Register
           </button>

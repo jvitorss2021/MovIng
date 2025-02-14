@@ -81,50 +81,77 @@ export default function Dashboard() {
   }
 
   return (
-    <div className="flex flex-col min-h-screen p-6 bg-base-200">
-      <div className="flex justify-center mb-6">
+    <div className="flex flex-col min-h-screen bg-base-200">
+      {/* Header */}
+      <div className="sticky top-0 z-10 bg-base-100 shadow-md p-4">
+        <div className="flex items-center justify-between">
+          <h1 className="text-xl font-bold text-primary">My Workouts</h1>
+          <button onClick={handleLogout} className="btn btn-ghost btn-sm text-error">
+            Logout
+          </button>
+        </div>
+      </div>
+
+      {/* Logo/Video */}
+      <div className="p-4 flex justify-center">
         <video
           src="/video.webm"
-          width={200}
-          height={200}
+          width={150}
+          height={150}
           autoPlay
           loop
           muted
-          className="ml-4"
+          className="rounded-full shadow-lg"
         />
       </div>
-      <div className="flex-grow grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-        {workouts.map((workout) => (
-          <div key={workout.id} className="card-compact bg-base-100 shadow-xl">
-            <div className="card-body">
-              <button
-                className="card-title text-xl font-bold cursor-pointer text-primary hover:underline"
-                onClick={() => handleEdit(workout.id)}
+
+      {/* Workout List */}
+      <div className="flex-1 p-4">
+        <div className="space-y-3">
+          {workouts.map((workout) => {
+            const exerciseCount = JSON.parse(workout.exercises).length;
+            return (
+              <div
+                key={workout.id}
+                className="bg-base-100 rounded-lg shadow-md overflow-hidden"
               >
-                {workout.name}
-              </button>
-              <div className="card-actions justify-end">
-                <button
-                  onClick={() => handleDelete(workout.id)}
-                  className="btn bg-red-800"
+                <div 
+                  className="p-4 cursor-pointer hover:bg-base-200 transition-colors"
+                  onClick={() => handleEdit(workout.id)}
                 >
-                  Delete
-                </button>
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <h2 className="text-lg font-semibold text-primary">
+                        {workout.name}
+                      </h2>
+                      <p className="text-sm text-base-content/70">
+                        {exerciseCount} {exerciseCount === 1 ? 'exercise' : 'exercises'}
+                      </p>
+                    </div>
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleDelete(workout.id);
+                      }}
+                      className="btn btn-ghost btn-sm text-error"
+                    >
+                      Delete
+                    </button>
+                  </div>
+                </div>
               </div>
-            </div>
-          </div>
-        ))}
-        <div className="card bg-base-100 shadow-xl flex items-center justify-center">
-          <div className="card-body">
-            <button onClick={handleAddWorkout} className="btn bg-teal-700 ">
-              Add Workout
-            </button>
-          </div>
+            );
+          })}
         </div>
       </div>
-      <div className="mt-6 flex justify-center">
-        <button onClick={handleLogout} className="btn bg-red-800">
-          Logout
+
+      {/* Add Workout Button (Fixed) */}
+      <div className="fixed bottom-6 right-6">
+        <button
+          onClick={handleAddWorkout}
+          className="btn btn-primary btn-circle btn-lg shadow-lg"
+        >
+          +
         </button>
       </div>
     </div>
