@@ -18,13 +18,19 @@ export default function Home() {
       {/* Logo Section */}
       <div className="flex-1 flex flex-col items-center justify-center">
         <div className="flex flex-col items-center">
-          <div className="mb-8">
+          <div className="mb-8 pointer-events-none select-none">
             <video
               src="/video.webm"
               autoPlay
               loop
               muted
-              className="rounded-full shadow-lg w-[200px] h-[200px] md:w-[300px] md:h-[300px]"
+              playsInline
+              className="rounded-full shadow-lg w-[200px] h-[200px] md:w-[300px] md:h-[300px] object-cover"
+              style={{
+                WebkitTouchCallout: 'none',
+                WebkitUserSelect: 'none',
+                userSelect: 'none'
+              }}
             />
           </div>
           <h1 className="text-4xl font-bold text-primary">

@@ -106,15 +106,23 @@ export default function Dashboard() {
 
       {/* Logo/Video */}
       <div className="p-4 flex justify-center">
-        <video
-          src="/video.webm"
-          width={150}
-          height={150}
-          autoPlay
-          loop
-          muted
-          className="rounded-full shadow-lg w-[150px] h-[150px] md:w-[300px] md:h-[300px]"
-        />
+        <div className="pointer-events-none select-none">
+          <video
+            src="/video.webm"
+            width={150}
+            height={150}
+            autoPlay
+            loop
+            muted
+            playsInline
+            className="rounded-full shadow-lg w-[150px] h-[150px] md:w-[300px] md:h-[300px] object-cover"
+            style={{
+              WebkitTouchCallout: 'none',
+              WebkitUserSelect: 'none',
+              userSelect: 'none'
+            }}
+          />
+        </div>
       </div>
 
       {/* Workout List */}
