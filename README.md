@@ -1,7 +1,5 @@
 # MovIng - Sua Ficha de Treino Digital
 
-![MovIng Logo](public/video.webm)
-
 Uma aplicação web focada para usuários mobile, onde terão fácil acesso à sua ficha de treino.
 
 ## ⚠️ Aviso Importante
