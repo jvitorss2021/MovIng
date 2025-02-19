@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { api } from "../../../lib/axios";
 import { useRouter, useParams } from "next/navigation";
 import Loading from "../../components/Loading";
+import ProtectedRoute from "../../components/ProtectedRoute";
 
 type Exercise = {
   id: number;
@@ -49,6 +50,11 @@ export default function EditWorkout() {
         setExercises(response.data.exercises);
       } catch (error) {
         console.error("Failed to fetch workout", error);
+        if ((error as any)?.response?.status === 401) {
+          localStorage.removeItem("token");
+          router.push("/login");
+          return;
+        }
         setError("Failed to fetch workout");
       } finally {
         setLoading(false);
@@ -56,7 +62,7 @@ export default function EditWorkout() {
     };
 
     fetchWorkout();
-  }, [id]);
+  }, [id, router]);
 
   const handleSave = async () => {
     const token = localStorage.getItem("token");
@@ -149,244 +155,246 @@ export default function EditWorkout() {
   if (!workout) return <div>Loading...</div>;
 
   return (
-    <div className="flex flex-col min-h-screen bg-base-200">
-      {/* Header */}
-      <div className="sticky top-0 z-10 bg-base-100 shadow-md p-4">
-        <div className="flex items-center justify-between">
-          <button onClick={handleBack} className="btn btn-ghost btn-sm">
-            ← Back
-          </button>
-          <h1 className="text-xl font-bold text-primary">Edit Workout</h1>
-          <button onClick={handleSave} className="btn btn-primary btn-sm">
-            Save
-          </button>
-        </div>
-      </div>
-
-      {/* Main Content */}
-      <div className="flex-1 p-4">
-        {error && <div className="alert alert-error mb-4">{error}</div>}
-        
-        {/* Workout Name */}
-        <div className="mb-6">
-          <label className="block text-primary text-sm mb-2">Workout Name</label>
-          <input
-            type="text"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            className="input input-bordered w-full"
-          />
+    <ProtectedRoute>
+      <div className="flex flex-col min-h-screen bg-base-200">
+        {/* Header */}
+        <div className="sticky top-0 z-10 bg-base-100 shadow-md p-4">
+          <div className="flex items-center justify-between">
+            <button onClick={handleBack} className="btn btn-ghost btn-sm">
+              ← Back
+            </button>
+            <h1 className="text-xl font-bold text-primary">Edit Workout</h1>
+            <button onClick={handleSave} className="btn btn-primary btn-sm">
+              Save
+            </button>
+          </div>
         </div>
 
-        {/* Exercises List */}
-        <div>
-          <label className="block text-primary text-sm mb-2">Exercícios</label>
-          <div className="space-y-2 mb-4">
-            {exercises.map((exercise, index) => (
-              <div
-                key={index}
-                className="bg-base-100 rounded-lg shadow-sm hover:bg-base-200 transition-colors"
-              >
-                <div className="p-3">
-                  <div className="flex flex-col">
-                    <div className="flex items-center justify-between mb-1">
-                      <div className="flex items-center gap-2">
-                        <span className="font-medium">{exercise.name}</span>
+        {/* Main Content */}
+        <div className="flex-1 p-4">
+          {error && <div className="alert alert-error mb-4">{error}</div>}
+          
+          {/* Workout Name */}
+          <div className="mb-6">
+            <label className="block text-primary text-sm mb-2">Workout Name</label>
+            <input
+              type="text"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              className="input input-bordered w-full"
+            />
+          </div>
+
+          {/* Exercises List */}
+          <div>
+            <label className="block text-primary text-sm mb-2">Exercícios</label>
+            <div className="space-y-2 mb-4">
+              {exercises.map((exercise, index) => (
+                <div
+                  key={index}
+                  className="bg-base-100 rounded-lg shadow-sm hover:bg-base-200 transition-colors"
+                >
+                  <div className="p-3">
+                    <div className="flex flex-col">
+                      <div className="flex items-center justify-between mb-1">
+                        <div className="flex items-center gap-2">
+                          <span className="font-medium">{exercise.name}</span>
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleEditName(exercise, index);
+                            }}
+                            className="btn btn-ghost btn-xs"
+                          >
+                            ✎
+                          </button>
+                        </div>
                         <button
                           onClick={(e) => {
                             e.stopPropagation();
-                            handleEditName(exercise, index);
+                            handleDeleteExercise(index);
                           }}
-                          className="btn btn-ghost btn-xs"
+                          className="btn btn-ghost btn-sm text-error"
                         >
-                          ✎
+                          ×
                         </button>
                       </div>
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleDeleteExercise(index);
-                        }}
-                        className="btn btn-ghost btn-sm text-error"
+                      <div 
+                        className="text-sm text-base-content/70 cursor-pointer"
+                        onClick={() => handleEditExercise(exercise, index)}
                       >
-                        ×
-                      </button>
-                    </div>
-                    <div 
-                      className="text-sm text-base-content/70 cursor-pointer"
-                      onClick={() => handleEditExercise(exercise, index)}
-                    >
-                      {exercise.sets} séries × {exercise.reps} reps • {exercise.weight}kg
+                        {exercise.sets} séries × {exercise.reps} reps • {exercise.weight}kg
+                      </div>
                     </div>
                   </div>
                 </div>
-              </div>
-            ))}
-          </div>
-
-          {/* Add Exercise Input */}
-          <div className="fixed bottom-0 left-0 right-0 bg-base-100 p-4 shadow-lg">
-            <div className="flex gap-2 max-w-lg mx-auto">
-              <input
-                type="text"
-                value={newExercise}
-                onChange={(e) => setNewExercise(e.target.value)}
-                onKeyPress={(e) => {
-                  if (e.key === 'Enter') {
-                    handleAddExercise();
-                  }
-                }}
-                className="input input-bordered flex-1"
-                placeholder="Add new exercise"
-              />
-              <button
-                onClick={handleAddExercise}
-                className="btn btn-primary"
-              >
-                Add
-              </button>
+              ))}
             </div>
-          </div>
-          {/* Spacer to prevent content from being hidden behind fixed input */}
-          <div className="h-20" />
-        </div>
-      </div>
 
-      {/* Exercise Name Edit Modal */}
-      {showNameModal && (
-        <div 
-          className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50"
-          onClick={(e) => {
-            if (e.target === e.currentTarget) {
-              setShowNameModal(false);
-            }
-          }}
-        >
-          <div className="bg-base-100 rounded-lg p-6 w-full max-w-sm">
-            <div className="flex justify-between items-center mb-4">
-              <h3 className="text-lg font-bold">Editar Nome do Exercício</h3>
-              <button 
-                onClick={() => setShowNameModal(false)}
-                className="btn btn-ghost btn-sm"
-              >
-                ×
-              </button>
-            </div>
-            
-            <div className="space-y-4">
-              <div>
-                <label className="block text-sm mb-1">Nome</label>
+            {/* Add Exercise Input */}
+            <div className="fixed bottom-0 left-0 right-0 bg-base-100 p-4 shadow-lg">
+              <div className="flex gap-2 max-w-lg mx-auto">
                 <input
                   type="text"
-                  value={editingName}
-                  onChange={(e) => setEditingName(e.target.value)}
-                  className="input input-bordered w-full"
-                  placeholder="Nome do exercício"
+                  value={newExercise}
+                  onChange={(e) => setNewExercise(e.target.value)}
+                  onKeyPress={(e) => {
+                    if (e.key === 'Enter') {
+                      handleAddExercise();
+                    }
+                  }}
+                  className="input input-bordered flex-1"
+                  placeholder="Add new exercise"
                 />
+                <button
+                  onClick={handleAddExercise}
+                  className="btn btn-primary"
+                >
+                  Add
+                </button>
               </div>
             </div>
-
-            <div className="flex gap-2 mt-6">
-              <button
-                onClick={() => setShowNameModal(false)}
-                className="btn btn-outline flex-1"
-              >
-                Cancelar
-              </button>
-              <button
-                onClick={handleSaveExerciseName}
-                className="btn btn-primary flex-1"
-              >
-                Salvar
-              </button>
-            </div>
+            {/* Spacer to prevent content from being hidden behind fixed input */}
+            <div className="h-20" />
           </div>
         </div>
-      )}
 
-      {/* Exercise Details Modal */}
-      {showModal && editingExercise && (
-        <div 
-          className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50"
-          onClick={(e) => {
-            if (e.target === e.currentTarget) {
-              setShowModal(false);
-            }
-          }}
-        >
-          <div className="bg-base-100 rounded-lg p-6 w-full max-w-sm">
-            <div className="flex justify-between items-center mb-4">
-              <h3 className="text-lg font-bold">{editingExercise.name}</h3>
-              <button 
-                onClick={() => setShowModal(false)}
-                className="btn btn-ghost btn-sm"
-              >
-                ×
-              </button>
-            </div>
-            
-            <div className="space-y-4">
-              <div>
-                <label className="block text-sm mb-1">Séries</label>
-                <input
-                  type="number"
-                  value={editingExercise.sets === 0 ? '' : editingExercise.sets}
-                  onChange={(e) => setEditingExercise({
-                    ...editingExercise,
-                    sets: e.target.value === '' ? 0 : parseInt(e.target.value)
-                  })}
-                  className="input input-bordered w-full"
-                  min="1"
-                />
+        {/* Exercise Name Edit Modal */}
+        {showNameModal && (
+          <div 
+            className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50"
+            onClick={(e) => {
+              if (e.target === e.currentTarget) {
+                setShowNameModal(false);
+              }
+            }}
+          >
+            <div className="bg-base-100 rounded-lg p-6 w-full max-w-sm">
+              <div className="flex justify-between items-center mb-4">
+                <h3 className="text-lg font-bold">Editar Nome do Exercício</h3>
+                <button 
+                  onClick={() => setShowNameModal(false)}
+                  className="btn btn-ghost btn-sm"
+                >
+                  ×
+                </button>
+              </div>
+              
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm mb-1">Nome</label>
+                  <input
+                    type="text"
+                    value={editingName}
+                    onChange={(e) => setEditingName(e.target.value)}
+                    className="input input-bordered w-full"
+                    placeholder="Nome do exercício"
+                  />
+                </div>
               </div>
 
-              <div>
-                <label className="block text-sm mb-1">Repetições</label>
-                <input
-                  type="number"
-                  value={editingExercise.reps === 0 ? '' : editingExercise.reps}
-                  onChange={(e) => setEditingExercise({
-                    ...editingExercise,
-                    reps: e.target.value === '' ? 0 : parseInt(e.target.value)
-                  })}
-                  className="input input-bordered w-full"
-                  min="1"
-                />
+              <div className="flex gap-2 mt-6">
+                <button
+                  onClick={() => setShowNameModal(false)}
+                  className="btn btn-outline flex-1"
+                >
+                  Cancelar
+                </button>
+                <button
+                  onClick={handleSaveExerciseName}
+                  className="btn btn-primary flex-1"
+                >
+                  Salvar
+                </button>
               </div>
-
-              <div>
-                <label className="block text-sm mb-1">Carga (kg)</label>
-                <input
-                  type="number"
-                  value={editingExercise.weight === 0 ? '' : editingExercise.weight}
-                  onChange={(e) => setEditingExercise({
-                    ...editingExercise,
-                    weight: e.target.value === '' ? 0 : parseFloat(e.target.value)
-                  })}
-                  className="input input-bordered w-full"
-                  min="0"
-                  step="0.5"
-                />
-              </div>
-            </div>
-
-            <div className="flex gap-2 mt-6">
-              <button
-                onClick={() => setShowModal(false)}
-                className="btn btn-outline flex-1"
-              >
-                Cancelar
-              </button>
-              <button
-                onClick={handleSaveExerciseDetails}
-                className="btn btn-primary flex-1"
-              >
-                Salvar
-              </button>
             </div>
           </div>
-        </div>
-      )}
-    </div>
+        )}
+
+        {/* Exercise Details Modal */}
+        {showModal && editingExercise && (
+          <div 
+            className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50"
+            onClick={(e) => {
+              if (e.target === e.currentTarget) {
+                setShowModal(false);
+              }
+            }}
+          >
+            <div className="bg-base-100 rounded-lg p-6 w-full max-w-sm">
+              <div className="flex justify-between items-center mb-4">
+                <h3 className="text-lg font-bold">{editingExercise.name}</h3>
+                <button 
+                  onClick={() => setShowModal(false)}
+                  className="btn btn-ghost btn-sm"
+                >
+                  ×
+                </button>
+              </div>
+              
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm mb-1">Séries</label>
+                  <input
+                    type="number"
+                    value={editingExercise.sets === 0 ? '' : editingExercise.sets}
+                    onChange={(e) => setEditingExercise({
+                      ...editingExercise,
+                      sets: e.target.value === '' ? 0 : parseInt(e.target.value)
+                    })}
+                    className="input input-bordered w-full"
+                    min="1"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm mb-1">Repetições</label>
+                  <input
+                    type="number"
+                    value={editingExercise.reps === 0 ? '' : editingExercise.reps}
+                    onChange={(e) => setEditingExercise({
+                      ...editingExercise,
+                      reps: e.target.value === '' ? 0 : parseInt(e.target.value)
+                    })}
+                    className="input input-bordered w-full"
+                    min="1"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm mb-1">Carga (kg)</label>
+                  <input
+                    type="number"
+                    value={editingExercise.weight === 0 ? '' : editingExercise.weight}
+                    onChange={(e) => setEditingExercise({
+                      ...editingExercise,
+                      weight: e.target.value === '' ? 0 : parseFloat(e.target.value)
+                    })}
+                    className="input input-bordered w-full"
+                    min="0"
+                    step="0.5"
+                  />
+                </div>
+              </div>
+
+              <div className="flex gap-2 mt-6">
+                <button
+                  onClick={() => setShowModal(false)}
+                  className="btn btn-outline flex-1"
+                >
+                  Cancelar
+                </button>
+                <button
+                  onClick={handleSaveExerciseDetails}
+                  className="btn btn-primary flex-1"
+                >
+                  Salvar
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
+    </ProtectedRoute>
   );
 }
