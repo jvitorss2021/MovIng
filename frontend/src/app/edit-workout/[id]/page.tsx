@@ -5,6 +5,7 @@ import { api } from "../../../lib/axios";
 import { useRouter, useParams } from "next/navigation";
 import Loading from "../../components/Loading";
 import ProtectedRoute from "../../components/ProtectedRoute";
+import { ApiAxiosError } from "../../../types/api";
 
 type Exercise = {
   id: number;
@@ -50,7 +51,8 @@ export default function EditWorkout() {
         setExercises(response.data.exercises);
       } catch (error) {
         console.error("Failed to fetch workout", error);
-        if ((error as any)?.response?.status === 401) {
+        const apiError = error as ApiAxiosError;
+        if (apiError.response?.status === 401) {
           localStorage.removeItem("token");
           router.push("/login");
           return;
